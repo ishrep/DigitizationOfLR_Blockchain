@@ -11,11 +11,11 @@
        {% for x in range(content|length) %}
             <label for="username">Plot no. {{content[x][0]}}, </label>
         {% endfor %}
-        <form action="/sellpage" method="post">   
+        <h2>Credentials:</h2>
+            <label for="cred">username: {{content2[0]}}, password: {{content2[1]}}</label>
+        <form action="/sellpage2" method="post">   
             <label for="Enter plot number">Plot no:</label>
             <input type="text" id="plotnum" name="plotnum" placeholder="Enter plot num"><br>
-            <label for="Enter buyerID">Enter buyerID:</label>
-            <input type="text" id="buyerID" name="buyerID" placeholder="Enter buyerID"><br>
             <label for="Enter Witness1">Enter Witness ID1:</label>
             <input type="text" id="witness1" name="witness1" placeholder="Enter witness ID1"><br>
             <label for="Enter Witness2">Enter Witness ID2:</label>

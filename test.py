@@ -78,6 +78,8 @@ def usermenu():
             return redirect(url_for("buypage"))
         elif x == "sell":
             return redirect(url_for("sellpage"))
+        elif x == "sell2":
+            return redirect(url_for("sellpage2"))
         elif x == "display":
             return redirect(url_for("displayplotpage"))
         elif x == "verify":
@@ -86,7 +88,95 @@ def usermenu():
             return redirect(url_for("admin"))
 
     return render_template("usermenu.htm")
-
+@app.route('/sellpage', methods =["GET", "POST"])
+def sellpage():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST":
+        part_txn=userobj.getplot()
+        pno = request.form.get("plotnum")
+        present_txn=""
+        for txn1 in part_txn:
+            
+            if(txn1[0]==pno):
+                present_txn= txn1[0]
+                for x in range(1,len(txn1)):
+                    present_txn = present_txn + " " + txn1[x]
+                present_txn = present_txn + "\n"
+                break
+        if(present_txn==""):
+            return redirect(url_for('usermenu'))
+        bid = request.form.get("buyerID")
+        wt1 = request.form.get("witness1")
+        wt2 = request.form.get("witness2")
+        file = open("initial.txt","a")
+        p_txn=present_txn.split()
+        file.write(p_txn[1]+" "+bid+" "+p_txn[0]+" "+wt1+" 1 "+wt2+" 1 1\n")
+        file.close()
+        return redirect(url_for("usermenu"))
+    return render_template("sellpage.htm", content = userobj.getplot())
+@app.route('/sellpage2', methods =["GET", "POST"])
+def sellpage2():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST":
+        part_txn=userobj.getplot()
+        pno = request.form.get("plotnum")
+        present_txn=""
+        for txn1 in part_txn:
+            
+            if(txn1[0]==pno):
+                present_txn= txn1[0]
+                for x in range(1,len(txn1)):
+                    present_txn = present_txn + " " + txn1[x]
+                present_txn = present_txn + "\n"
+                break
+        if(present_txn==""):
+            file = open("tempinit.txt","r")           
+            ls1 = file.readlines()
+            file.seek(0)
+            ls = file.readline()
+            ls2 = ls.split()
+            while (ls!=''):
+                if(ls2[2]=="v"):
+                    ls1.remove(ls)
+                ls=file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("tempinit.txt","w")
+            file.writelines(ls1)
+            file.close()
+            return redirect(url_for('usermenu'))
+        wt1 = request.form.get("witness1")
+        wt2 = request.form.get("witness2")
+        file = open("tempinit.txt","r")
+        file.seek(0)
+        ls1=file.readlines()
+        file.seek(0)
+        ls = file.readline()
+        ls2 = ls.split()
+        bid=""
+        while True:
+            if(ls2[0]==userobj.username and ls2[2]=="v"):
+                bid=ls2[1]
+                break
+            ls=file.readline()
+            ls2=ls.split()
+        ls1.remove(ls)
+        file.close()
+        ls1.append(userobj.username+" "+bid+" "+pno+" "+wt1+" 1 "+wt2+" 1 1\n")
+        file = open("tempinit.txt","w")
+        file.writelines(ls1)
+        file.close()
+        return redirect(url_for("usermenu"))
+    return render_template("sellpage2.htm", content = userobj.getplot(), content2 = userobj.getuser())
+@app.route('/displayplotpage', methods =["GET", "POST"])
+def displayplotpage():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST": 
+        return redirect(url_for("usermenu"))
+    return render_template("displayplotpage.htm", content = userobj.getplot())
 @app.route('/buypage', methods =["GET", "POST"])
 def buypage():
     if signedin == 0:
@@ -105,7 +195,7 @@ def buypage():
                 present_txn = present_txn + "\n"
                 break
         if(present_txn==""):
-            return redirect(url_for('buypage'))
+            return redirect(url_for('usermenu'))
         if type=="accept":
             wt1 = request.form.get("witness1")
             wt2 = request.form.get("witness2")
