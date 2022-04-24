@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <body>
+       <h1>Available plots:</h1>
+       {% for x in range(content|length) %}
+            <label for="username">Plot from {{content[x][0]}} against plot no. {{content[x][2]}}:</label>
+        {% endfor %}
+        <form action="/buypage" method="post">   
+            <label for="Enter plot number">Plot no:</label>
+            <input type="text" id="plotnum" name="plotnum" placeholder="Enter plot num"><br>
+            <label for="Enter Witness1">Enter Witness ID1:</label>
+            <input type="text" id="witness1" name="witness1" placeholder="Enter witness ID1"><br>
+            <label for="Enter Witness2">Enter Witness ID2:</label>
+            <input type="text" id="witness2" name="witness2" placeholder="Enter witness ID2"><br>
+            <button type="submit" name="verify" value="accept">Accept</button>
+            <button type="submit" name="verify" value="deny">Deny</button>  
+        </form> 
+    </body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <body>
+        <h1>Available plots:</h1>
+        {% for x in range(content|length)%}
+            <label for="username">Plot from {{content[x][0]}} against plot no. {{content[x][2]}}:</label>
+        {% endfor %}
+        <form action="/verifypage" method="post">   
+            <label for="Enter plot number">Plot no:</label>
+            <input type="text" id="plotnum" name="plotnum" placeholder="Enter plot num"><br>
+            <button type="submit" name="verify" value="accept">Accept</button>
+            <button type="submit" name="verify" value="deny">Deny</button>  
+        </form> 
+    </body>
+</html>
