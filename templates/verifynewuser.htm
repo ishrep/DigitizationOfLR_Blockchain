@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <body>
+       <h1>New users details:</h1>
+       {% for x in content %}
+                userdetail: {{x}}<br>
+        {% endfor %}
+        <form action="/verifynewuser" method="post">   
+            <label for="Enter userID">user ID: </label>
+            <input type="text" id="nuser" name="nuser" placeholder="Enter userID"><br>
+            <button type="submit" name="verify" value="accept">Accept</button> 
+            <button type="submit" name="verify" value="deny">Deny</button> 
+        </form> 
+    </body>
+</html>

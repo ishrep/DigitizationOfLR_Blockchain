@@ -1,4 +1,15 @@
 import random
+def getadmins():
+    file = open("users.txt", "r")
+    admins = list()
+    user = file.readline()
+    while(user!=''):
+        user = user.split()
+        if(int(user[2]) == 2):
+            admins.append(user)
+        user = file.readline()
+    return admins        
+
 def login(accessLevel, username, password):
     if accessLevel == 1 or accessLevel == 2:
         file = open("users.txt", "r")
@@ -36,7 +47,7 @@ class alreadyuser(user):
         return flag
     def add_temp_creds(self,new_user,new_pass):
         file=open("tempcred.txt","a")
-        file.write(new_user+" "+new_pass+" 1"+"\n")
+        file.write(new_user+" "+new_pass+" 0"+"\n")
     def getuser(self):
         while True:
             new_user = str(random.randint(1000000,9999999))
@@ -89,6 +100,24 @@ class admin(user):
     def __init__(self,username,password):
         user.__init__(self,username, password)
 
+    def mine(self,blockchain):
+        pass
+    def verifyuser(self):
+        file = open("userdet.txt","r")
+        ls = file.readlines()
+        return ls
+
 class newuser(user):
     def __init__(self,username,password):
         user.__init__(self,username, password)
+    def check_user(self,nuser):
+        flag = 0
+        file=open("users.txt","r")
+        f=file.readline()
+        while(f!=''):
+            f=f.split()
+            if(f[0]==nuser):
+                flag=1
+                break;
+            f=file.readline()
+        return flag

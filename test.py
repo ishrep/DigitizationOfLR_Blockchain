@@ -1,5 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
 from user import *
+from datetime import *
+from blockchain import *
   
 app = Flask(__name__)   
   
@@ -15,9 +17,9 @@ def usertype():
         if(type == "user"):
             return redirect(url_for("userlogin"))
         elif type == "newuser":
-            return redirect(url_for("newuser"))
+            return redirect(url_for("newuserlogin"))
         elif type == "admin":
-            return redirect(url_for("admin"))
+            return redirect(url_for("adminlogin"))
 
     return render_template("login.htm")
     
@@ -58,13 +60,13 @@ def adminlogin():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password") 
-        details = login( 0, username, password)
+        details = login( 2, username, password)
         if(details!= 0):
             global signedin
             signedin =1
             global userobj
-            userobj = admin(details)
-            return redirect(url_for("newusermenu"))
+            userobj = admin(details[0],details[1])
+            return redirect(url_for("adminusermenu"))
 
     return render_template("admin.htm")
 
@@ -88,6 +90,228 @@ def usermenu():
             return redirect(url_for("admin"))
 
     return render_template("usermenu.htm")
+
+@app.route('/newusermenu', methods =["GET", "POST"])
+def newusermenu():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST":
+        npass = request.form.get("newpass")
+        nuser = request.form.get("newuser")
+        flag = userobj.check_user(nuser)
+        flag2=0
+        if(flag==0):
+            aadhar = request.form.get("aadhar")
+            name = request.form.get("name")
+            address = request.form.get("addr")
+            tuser = request.form.get("tuser")
+            file = open("tempcred.txt","r")
+            ls1 = file.readlines()
+            file.seek(0)
+            ls = file.readline()
+            ls2 = ls.split()
+            while ls!='':
+                if(ls2[0]==tuser):
+                    flag2=1
+                    ls1.remove(ls)
+                    ls1.append(ls2[0]+" "+ls2[1]+" 1 "+nuser+" "+npass+"\n")
+                    break
+                ls = file.readline()
+                ls2 = ls.split()
+            if(flag2==0):
+                return redirect(url_for("newuserlogin"))
+            file.close()
+            file = open("tempcred.txt","w")
+            file.writelines(ls1)
+            file.close()
+            file = open("userdet.txt","a")
+            file.write(nuser+" "+aadhar+" "+name+" "+address+"\n")
+            file.close()
+        return redirect(url_for("newuserlogin"))
+    return render_template("newusermenu.htm")
+    
+@app.route('/verifynewuser', methods = ["GET", "POST"])
+def verifynewuser():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST":
+        nuser = request.form.get("nuser")
+        type1 = request.form.get("verify")
+        if(type1=="accept"):
+            file=open("tempcred.txt","r")
+            ls1=file.readlines()
+            file.seek(0)
+            ls=file.readline()
+            ls2=ls.split()
+            while ls!='':
+                if(ls2[2]=="1"):
+                    if(ls2[3]==nuser):
+                        ls1.remove(ls)
+                        break
+                ls = file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("tempcred.txt","w")
+            file.writelines(ls1)
+            file.close()
+            tuser = ls2[0]
+            file = open("users.txt","a")
+            file.write(ls2[3]+" "+ls2[4]+" 1\n")
+            file.close()
+            file = open("tempinit.txt","r")
+            ls1 = file.readlines()
+            file.seek(0)
+            ls = file.readline()
+            ls2 = ls.split()
+            while ls!='':
+                if(ls2[1]==tuser):
+                    ls1.remove(ls)
+                    break
+                ls = file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("tempinit.txt","w")
+            file.writelines(ls1)
+            file.close()
+            file = open("initial.txt","a")
+            file.write(ls2[0]+" "+nuser+" "+ls2[2]+" "+ls2[3]+" "+ls2[4]+" "+ls2[5]+" "+ls2[6]+" "+ls2[7]+"\n")
+            file.close()
+            file = open("userdet.txt","r")
+            ls1 = file.readlines()
+            file.seek(0)
+            ls = file.readline()
+            ls2 = ls.split()
+            while ls!='':
+                if(ls2[0]==nuser):
+                    ls1.remove(ls)
+                    break
+                ls = file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("userdet.txt","w")
+            file.writelines(ls1)
+            file.close()
+            file = open("userdetail.txt","a")
+            file.write(ls2[0]+" "+ls2[1]+" "+ls2[2]+" "+ls2[3]+"\n")
+            file.close()
+        elif(type1=="deny"):
+            file=open("tempcred.txt","r")
+            ls1=file.readlines()
+            file.seek(0)
+            ls=file.readline()
+            ls2=ls.split()
+            while ls!='':
+                if(ls2[2]=="1"):
+                    if(ls2[3]==nuser):
+                        ls1.remove(ls)
+                        break
+                ls = file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("tempcred.txt","w")
+            file.writelines(ls1)
+            file.close()
+            tuser = ls2[0]
+            file = open("tempinit.txt","r")
+            ls1 = file.readlines()
+            file.seek(0)
+            ls = file.readline()
+            ls2 = ls.split()
+            while ls!='':
+                if(ls2[1]==tuser):
+                    ls1.remove(ls)
+                    break
+                ls = file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("tempinit.txt","w")
+            file.writelines(ls1)
+            file.close()
+            file = open("userdet.txt","r")
+            ls1 = file.readlines()
+            file.seek(0)
+            ls = file.readline()
+            ls2 = ls.split()
+            while ls!='':
+                if(ls2[0]==nuser):
+                    ls1.remove(ls)
+                    break
+                ls = file.readline()
+                ls2=ls.split()
+            file.close()
+            file = open("userdet.txt","w")
+            file.writelines(ls1)
+            file.close()
+        return redirect(url_for("adminusermenu"))
+    return render_template("verifynewuser.htm", content = userobj.verifyuser())
+
+@app.route('/adminusermenu', methods = ["GET", "POST"])
+def adminusermenu():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST":
+        type = request.form.get("userAction")
+        if(type == "mine"):
+            admins = getadmins()
+            day_of_year = datetime.datetime.now().timetuple().tm_yday
+            adminno = day_of_year%(len(admins))
+            print(adminno)
+            print(userobj.username)
+            if(admins[adminno][0] == userobj.username):
+                global blkchain 
+                blkchain = blockchain()
+                return render_template("transactions.htm", content = get_transactions())
+            else:
+                return "It's not your turn to mine"
+        if(type == "verify"):
+            return redirect(url_for("verifynewuser"))
+    return render_template("adminusermenu.htm")
+
+@app.route("/transactions",methods = ["GET","POST"])
+def verifiedtransaction():
+    if signedin == 0:
+        return redirect('/')
+    if request.method == "POST":
+        txn_list = request.form.getlist("transactionstatus")
+        transactions = get_transactions()
+        accepted_transactions = list()
+        plots = get_plots()
+        newplots = list()
+        for x in txn_list:
+            seller = transactions[int(x)][0]
+            buyer = transactions[int(x)][1]
+            plotno = transactions[int(x)][2]
+            
+            for plot in plots:
+                if plot[1] == seller and plot[0]== plotno:
+                    plotarea = plot[2]
+                    newplot = [plotno, buyer, plotarea]
+                    newplots.append(newplot)  
+
+        for x in txn_list:
+            seller = transactions[int(x)][0]
+            buyer = transactions[int(x)][1]
+            plotno = transactions[int(x)][2]
+            
+            for plot in plots:
+                if plot[1] == seller and plot[0]== plotno:
+                    pass
+                else:
+                    newplots.append(plot)
+        add_plots(newplots)
+        accepted_transaction = str()
+        for transaction in transactions[int(x)]:
+            accepted_transaction = accepted_transaction + transaction
+        accepted_transactions.append(accepted_transaction)
+        file = open("mempool.txt","w")
+        file.close()    
+        blockdets = [blkchain.height+1,accepted_transactions]
+        newblock = block(blockdets)
+        blkchain.blocks.append(newblock)
+        blkchain.height+=1
+        return newblock
+
+    return render_template("transactions.htm", content = get_transactions())
 @app.route('/sellpage', methods =["GET", "POST"])
 def sellpage():
     if signedin == 0:
@@ -115,6 +339,7 @@ def sellpage():
         file.close()
         return redirect(url_for("usermenu"))
     return render_template("sellpage.htm", content = userobj.getplot())
+
 @app.route('/sellpage2', methods =["GET", "POST"])
 def sellpage2():
     if signedin == 0:
@@ -170,6 +395,7 @@ def sellpage2():
         file.close()
         return redirect(url_for("usermenu"))
     return render_template("sellpage2.htm", content = userobj.getplot(), content2 = userobj.getuser())
+
 @app.route('/displayplotpage', methods =["GET", "POST"])
 def displayplotpage():
     if signedin == 0:
@@ -177,6 +403,7 @@ def displayplotpage():
     if request.method == "POST": 
         return redirect(url_for("usermenu"))
     return render_template("displayplotpage.htm", content = userobj.getplot())
+
 @app.route('/buypage', methods =["GET", "POST"])
 def buypage():
     if signedin == 0:
