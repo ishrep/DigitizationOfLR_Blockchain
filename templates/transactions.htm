@@ -11,7 +11,8 @@
     {% for x in range(content|length) %}
         transaction {{x}} details: {{content[x]}}<input type="checkbox" name="transactionstatus" value="{{x}}"><br>
     {% endfor %}
-    <button type="submit">submit</button>
+    <button type="submit" name="verify" value="submit">Submit</button> 
+    <button type="submit" name="verify" value="back">Back</button>
     </form>
 </body>
 </html>

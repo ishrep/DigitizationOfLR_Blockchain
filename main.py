@@ -309,12 +309,15 @@ class block:
             self.blockno = blockdets[0]
             self.txn_det = blockdets[1]
             self.timestamp = datetime.datetime.now()
-            self.hash = self.hash()
             
             if(self.blockno == 1):
                 self.prevhash = "0"*64
             else:
                 self.prevhash = new_blockchain.blocks[-1].hash
+            records = open("record.txt","a")
+            records.writelines(self.txn_det)
+            records.close()
+            self.hash = self.hash()
             file = open("block"+str(self.blockno)+".txt","w")
             file.write(str(self.blockno)+"\n")
             file.writelines(self.txn_det)

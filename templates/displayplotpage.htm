@@ -11,7 +11,7 @@
        {% for x in range(content|length) %}
             <label for="username">You own Plot no. {{content[x][0]}}, </label>
         {% endfor %}
-        <form action="/sellpage" method="post">   
+        <form action="/displayplotpage" method="post">   
             <button type="submit" name="verify" value="accept">GO Back</button> 
         </form> 
     </body>

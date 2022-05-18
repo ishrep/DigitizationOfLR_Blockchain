@@ -1,8 +1,11 @@
 import random
+from keygen import *
+
 def getadmins():
     file = open("users.txt", "r")
     admins = list()
     user = file.readline()
+    
     while(user!=''):
         user = user.split()
         if(int(user[2]) == 2):
@@ -30,10 +33,28 @@ class user:
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.plot = str()
 
 class alreadyuser(user):
     def __init__(self,username,password):
         user.__init__(self,username, password)
+        self.privateKey = getPrivateKey(username)
+        self.publicKey = getPublicKey(username)
+
+    def get_rec(self):
+        pno=self.plot
+        txn = list()
+        file = open("record.txt","r")
+        ls1 = file.readline()
+        
+        while(ls1!=''):
+            ls = ls1.split()
+            if(ls[2]==pno):
+                txn.append(ls1)
+            ls1 = file.readline()
+        file.close()  
+        return txn
+
     def temp_cred_checker(self,new_user, new_pass):
         flag = 0
         file=open("tempcred.txt","r")
@@ -45,9 +66,11 @@ class alreadyuser(user):
                 break;
             f=file.readline()
         return flag
+
     def add_temp_creds(self,new_user,new_pass):
         file=open("tempcred.txt","a")
         file.write(new_user+" "+new_pass+" 0"+"\n")
+
     def getuser(self):
         while True:
             new_user = str(random.randint(1000000,9999999))
@@ -63,6 +86,7 @@ class alreadyuser(user):
         f3 = open("tempinit.txt","a")
         f3.write(self.username+" "+buyer+" v\n")
         return ls
+
     def getpart_txns(self):
         file=open("initial.txt","r")
         part_txns = list()
@@ -84,6 +108,7 @@ class alreadyuser(user):
                 part_txns.append(part_txn)
             part_txn = file.readline()
         return part_txns
+
     def getverify_txns(self):
         file=open("initial.txt","r")
         part_txns = list()

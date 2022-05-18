@@ -8,6 +8,7 @@
 </head>
     <body>
        <h1>Available plots:</h1>
+       {{content3}}<br>
        {% for x in range(content|length) %}
             <label for="username">Plot no. {{content[x][0]}}, </label>
         {% endfor %}
@@ -21,6 +22,7 @@
             <label for="Enter Witness2">Enter Witness ID2:</label>
             <input type="text" id="witness2" name="witness2" placeholder="Enter witness ID2"><br>
             <button type="submit" name="verify" value="accept">Sell</button> 
+            <button type="submit" name="verify" value="back">Back</button> 
         </form> 
     </body>
 </html>
